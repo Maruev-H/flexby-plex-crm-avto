@@ -4,10 +4,14 @@ const axios = require('axios');
 const bodyParser = require('body-parser');
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8080;
 
 // Middleware для обработки JSON тел запросов
 app.use(bodyParser.json());
+
+app.get('/', (req, res) => {
+    res.send('OK');
+});
 
 app.post('/webhook', async (req, res) => {
     console.log('Received webhook:', JSON.stringify(req.body, null, 2)); // Логируем входящий запрос
