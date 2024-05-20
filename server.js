@@ -16,27 +16,29 @@ app.post('/webhook', async (req, res) => {
 
     if (event === 'lead') {
         const leadData = {
-            dealerId: process.env.DEALER_ID,
-            websiteHost: process.env.WEBSITE_HOST,
             type: 'callback',
             values: {
                 clientName: data.client.name,
                 clientPhone: data.client.phone,
                 comment: `Lead from ${site.name} (${site.domain}) - Form: ${data.form_name}`
-            }
+            },
+            source: {
+                dealerId: process.env.DEALER_ID,
+                websiteHost: process.env.WEBSITE_HOST,
+            },
         };
 
         try {
             console.log('Sending to Plex-CRM:', JSON.stringify(leadData, null, 2)); // Логируем отправляемые данные
 
-            const response = await axios.post('https://plex-crm.ru/api/v3/leads', leadData, {
+            const response = await axios.post('https://plex-crm.ru/api/v3/contact/form', leadData, {
                 headers: {
                     'Authorization': `Bearer ${process.env.PLEX_CRM_TOKEN}`,
                     'Content-Type': 'application/json'
                 }
             });
 
-            console.log('Response from Plex-CRM:', response.status, response.statusText); // Логируем ответ
+            console.log('Response from Plex-CRM:', response.data); // Логируем ответ
 
             if (response.status === 200) {
                 res.status(200).send('OK');
